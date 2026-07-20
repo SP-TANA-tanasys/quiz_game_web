@@ -3,12 +3,40 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Quiz Game</title>
-    <!-- Instant redirect to quiz.html -->
-    <meta http-equiv="refresh" content="0; url=quiz.html">
-    <script>/* Fallback for older browsers */location.replace('quiz.html');</script>
+    <title>ゲーム集</title>
+    <style>
+      :root{--bg:#f5f7fa;--card:#ffffff;--accent:#2b7bd3;--text:#1f2937}
+      body{font-family: "Noto Sans JP", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--text); margin:0; padding:32px; display:flex; align-items:center; justify-content:center; min-height:100vh}
+      .container{width:min(900px,95%)}
+      header{margin-bottom:24px}
+      h1{margin:0 0 8px 0; font-size:28px; color:var(--accent)}
+      p.lead{margin:0; color:#555}
+      .card{background:var(--card); border-radius:12px; box-shadow:0 6px 18px rgba(31,41,55,0.08); padding:24px}
+      table.content-table{width:100%; border-collapse:collapse; text-align:center}
+      .content-table th,.content-table td{border:1px solid #e6e9ef; padding:20px}
+      .content-table th{background:linear-gradient(180deg,#f7fbff,#ffffff); font-size:18px}
+      .content-table td a{color:var(--accent); text-decoration:none; font-weight:600}
+      .content-table td a:hover{text-decoration:underline}
+      @media (max-width:480px){.content-table th,.content-table td{padding:12px;font-size:14px}}
+    </style>
   </head>
   <body>
-    <p>If you are not redirected automatically, <a href="quiz.html">click here to open the quiz</a>.</p>
+    <div class="container">
+      <header>
+        <h1>ゲーム集</h1>
+        <p class="lead">クイズやゲームへのリンク集です。表示したいタイトルをクリックしてください。</p>
+      </header>
+      <div class="card">
+        <table class="content-table" aria-label="コンテンツ一覧">
+          <tr>
+            <th colspan="2">コンテンツ</th>
+          </tr>
+          <tr>
+            <td><a href="quiz.html">DQ10クイズ</a></td>
+            <td>FF14クイズ</td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </body>
 </html>
