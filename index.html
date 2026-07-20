@@ -6,9 +6,10 @@
     <title>ゲーム集</title>
     <style>
       :root{--bg:#f5f7fa;--card:#ffffff;--accent:#2b7bd3;--text:#1f2937}
-      body{font-family: "Noto Sans JP", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--text); margin:0; padding:32px; display:flex; align-items:center; justify-content:center; min-height:100vh}
+      body{font-family: "Noto Sans JP", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--text); margin:0; padding:16px; display:flex; align-items:center; justify-content:center}
       .container{width:min(900px,95%)}
-      header{margin-bottom:24px}
+      header{margin-bottom:24px; text-align:center}
+      header img{max-width:100%; height:auto; margin-bottom:16px; border-radius:12px; box-shadow:0 6px 18px rgba(31,41,55,0.08)}
       h1{margin:0 0 8px 0; font-size:28px; color:var(--accent)}
       p.lead{margin:0; color:#555}
       .card{background:var(--card); border-radius:12px; box-shadow:0 6px 18px rgba(31,41,55,0.08); padding:24px}
@@ -17,12 +18,13 @@
       .content-table th{background:linear-gradient(180deg,#f7fbff,#ffffff); font-size:18px}
       .content-table td a{color:var(--accent); text-decoration:none; font-weight:600}
       .content-table td a:hover{text-decoration:underline}
-      @media (max-width:480px){.content-table th,.content-table td{padding:12px;font-size:14px}}
+      @media (max-width:480px){.content-table th,.content-table td{padding:12px;font-size:14px}header img{max-height:200px}}
     </style>
   </head>
   <body>
     <div class="container">
       <header>
+        <img src="https://raw.githubusercontent.com/SP-TANA-tanasys/quiz_game_web/main/header-image.png" alt="ゲーム集ヘッダー画像">
         <h1>ゲーム集</h1>
         <p class="lead">クイズやゲームへのリンク集です。表示したいタイトルをクリックしてください。</p>
       </header>
