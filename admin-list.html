@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>問題一覧</title>
+<style>
+  body {
+    font-family: "Meiryo", sans-serif;
+    background: #000;
+    color: #fff;
+    padding: 40px;
+  }
+
+  #container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #1a1a1a;
+    border: 4px solid #c9a34e;
+    padding: 25px;
+    box-shadow: 0 0 25px rgba(255,215,0,0.3);
+  }
+
+  h1 {
+    color: #ffe9a3;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .difficulty-section {
+    margin-bottom: 30px;
+  }
+
+  .difficulty-title {
+    background: #0055cc;
+    color: #fff;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  .quiz-item {
+    background: #333;
+    border: 2px solid #555;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+
+  .quiz-item.ox {
+    border-left: 4px solid #4caf50;
+  }
+
+  .quiz-item.multi {
+    border-left: 4px solid #ff9800;
+  }
+
+  .quiz-question {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #ffe9a3;
+  }
+
+  .quiz-answer {
+    font-size: 0.9rem;
+    color: #aaa;
+  }
+
+  .quiz-choices {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 5px;
+  }
+
+  .quiz-type {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #555;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+
+  .quiz-type.ox {
+    background: #4caf50;
+  }
+
+  .quiz-type.multi {
+    background: #ff9800;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+  }
+
+  .button-area {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  button {
+    padding: 12px 20px;
+    background: #666;
+    border: 2px solid #ffe9a3;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+    border-radius: 4px;
+  }
+
+  button:hover {
+    background: #888;
+  }
+
+  button.btn-delete {
+    background: #f44336;
+  }
+
+  button.btn-delete:hover {
+    background: #d32f2f;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <h1>問題一覧（管理者用）</h1>
+  
+  <div id="content" class="loading">読み込み中...</div>
+
+  <div class="button-area">
+    <button onclick="location.href='select.html'">戻る</button>
+  </div>
+</div>
+
+<script>
+// 管理者チェック
+if (localStorage.getItem("admin") !== "1") {
+  alert("管理者のみアクセスできます");
+  location.href = "login.html";
+}
+
+const difficulties = ["easy", "normal", "hard"];
+const difficultyText = {
+  easy: "やさしい",
+  normal: "ふつう",
+  hard: "むずかしい"
+};
+
+async function loadAllQuizzes() {
+  const content = document.getElementById("content");
+  content.innerHTML = "";
+
+  try {
+    for (const difficulty of difficulties) {
+      const response = await fetch(`https://quiz-game-web.onrender.com/get-quiz?difficulty=${difficulty}`);
+      const quizzes = await response.json();
+
+      const section = document.createElement("div");
+      section.className = "difficulty-section";
+
+      const title = document.createElement("div");
+      title.className = "difficulty-title";
+      title.textContent = `${difficultyText[difficulty]} (${quizzes.length}問)`;
+      section.appendChild(title);
+
+      if (quizzes.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "問題がありません";
+        section.appendChild(empty);
+      } else {
+        quizzes.forEach((quiz, index) => {
+          const item = document.createElement("div");
+          item.className = `quiz-item ${quiz.type}`;
+
+          let typeLabel = quiz.type === "ox" ? "○×問題" : "多択問題";
+          let answerText = "";
+
+          if (quiz.type === "ox") {
+            answerText = `正解: ${quiz.answer ? "○（true）" : "×（false）"}`;
+          } else {
+            answerText = `正解: ${quiz.choices[quiz.answer - 1]} (${quiz.answer}番目)`;
+          }
+
+          item.innerHTML = `
+            <div>
+              <span class="quiz-type ${quiz.type}">${typeLabel}</span>
+            </div>
+            <div class="quiz-question">Q${index + 1}. ${quiz.question}</div>
+            <div class="quiz-answer">${answerText}</div>
+            ${quiz.type === "multi" ? `<div class="quiz-choices">選択肢: ${quiz.choices.join(" / ")}</div>` : ""}
+          `;
+
+          section.appendChild(item);
+        });
+      }
+
+      content.appendChild(section);
+    }
+  } catch (e) {
+    content.innerHTML = `<div class="empty">エラーが発生しました: ${e.message}</div>`;
+    console.error(e);
+  }
+}
+
+// 読み込み実行
+loadAllQuizzes();
+</script>
+
+</body>
+</html>
