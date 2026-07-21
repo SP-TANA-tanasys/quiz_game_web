@@ -62,6 +62,16 @@
   button:hover {
     background: #003f99;
   }
+  
+    .btn-back {
+    background: #666;
+    margin-top: 20px;
+  }
+
+  .btn-back:hover {
+    background: #888;
+  }
+
 
   #status {
     margin-top: 20px;
@@ -117,6 +127,7 @@
   </div>
 
   <button onclick="saveQuiz()">保存する</button>
+  <button class="btn-back" onclick="goBack()">戻る</button>
   <div id="status"></div>
 </div>
 
@@ -241,6 +252,11 @@ if (localStorage.getItem("admin") !== "1") {
     } catch (e) {
       showStatus("エラーが発生しました: " + e.message, false);
     }
+      }
+
+    // 戻る
+    function goBack() {
+    location.href = "select.html";
   }
 </script>
 
