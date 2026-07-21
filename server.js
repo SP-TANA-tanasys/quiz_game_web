@@ -1,5 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname));
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // クイズデータの保存ディレクトリ
 const quizDir = path.join(__dirname, "quizzes");
@@ -38,7 +47,6 @@ function saveQuizzes(difficulty, quizzes) {
 }
 
 // ログイン処理
-
 app.post("/login", (req, res) => {
   const { password } = req.body;
 
