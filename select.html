@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>難易度選択</title>
+<style>
+  body {
+    font-family: "Meiryo", sans-serif;
+    background: #000;
+    color: #fff;
+    text-align: center;
+    padding-top: 60px;
+  }
+
+  #menu {
+    width: 480px;
+    margin: 0 auto;
+    background: #1a1a1a;
+    border: 4px solid #c9a34e;
+    padding: 25px;
+    box-shadow: 0 0 25px rgba(255,215,0,0.3);
+  }
+
+  h1 {
+    color: #ffe9a3;
+    margin-bottom: 20px;
+  }
+
+  .command {
+    display: block;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 12px 20px;
+    margin: 10px auto;
+    width: 70%;
+    text-align: left;
+    border: 2px solid #fff;
+    font-size: 1.3rem;
+    cursor: pointer;
+    text-shadow: 0 0 4px #000;
+    transition: 0.1s;
+  }
+
+  .command:hover {
+    background: #333;
+    transform: scale(1.03);
+  }
+
+  .selected {
+    background: #0055cc;
+    border-color: #ffe9a3;
+  }
+
+  /* 管理者UI用 */
+  #admin-area {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #444;
+  }
+
+  #admin-pass {
+    width: 70%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #333;
+    color: #fff;
+    border: 2px solid #fff;
+  }
+
+  #admin-btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #0055cc;
+    border: 2px solid #ffe9a3;
+    color: #fff;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <h1>難易度を選んでください</h1>
+
+  <div class="command" onclick="selectDifficulty('easy')">▶ やさしい</div>
+  <div class="command" onclick="selectDifficulty('normal')">　ふつう</div>
+  <div class="command" onclick="selectDifficulty('hard')">　むずかしい</div>
+  <div class="command" onclick="startQuiz()">　はじめる</div>
+
+  <!-- ★★★ ここに管理者専用エリアを追加する ★★★ -->
+  <div id="admin-area">
+    <h2>管理者メニュー</h2>
+   <div class="command" onclick="goAdmin()">　問題作成ページへ（管理者）</div>
+  </div>
+</div>
+
+<!-- 効果音 -->
+<audio id="se" src="https://soundeffect-lab.info/sound/button/mp3/button01.mp3"></audio>
+
+<script>
+// 管理者ログインチェック
+const isAdmin = localStorage.getItem("admin") === "1";
+  let selected = "easy";
+
+  function playSE() {
+    const se = document.getElementById("se");
+    se.currentTime = 0;
+    se.play();
+  }
+
+  function selectDifficulty(level) {
+    playSE();
+    selected = level;
+
+    const commands = document.querySelectorAll(".command");
+    commands.forEach(cmd => cmd.classList.remove("selected"));
+
+    if (level === "easy") commands[0].classList.add("selected");
+    if (level === "normal") commands[1].classList.add("selected");
+    if (level === "hard") commands[2].classList.add("selected");
+  }
+
+  function startQuiz() {
+    playSE();
+    location.href = "quiz.html?difficulty=" + selected;
+  }
+
+  /* ★★★ 管理者遷移処理をここに追加 ★★★ */
+  function goAdmin() {
+    const pass = document.getElementById("admin-pass").value;
+
+    const ADMIN_PASSWORD = "dq10admin"; // ← 好きに変更してOK
+
+    if (pass === ADMIN_PASSWORD) {
+      playSE();
+      location.href = "input.html?difficulty=" + selected + "&admin=1";
+    } else {
+      alert("パスワードが違います");
+    }
+  }
+  function goAdmin() {
+  if (!isAdmin) {
+    alert("管理者としてログインしてください");
+    location.href = "login.html";
+    return;
+  }
+
+  // 管理者なら input.html へ
+  location.href = "input.html?difficulty=" + selected;
+}
+</script>
+
+</body>
+</html>

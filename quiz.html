@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<link rel="stylesheet" href="dq10.css">
   <meta charset="UTF-8">
   <title>DQ10 ○×クイズ</title>
   <style>
@@ -75,88 +76,127 @@
     <button class="btn btn-next" id="btn-next" style="display:none;">次の問題へ</button>
   </div>
 
-  <script>
-    // ★ ここに問題を追加していく（true = ○, false = ×）
-    const questions = [
-      {
-        text: "主人公の最初の種族は人間ではない。",
-        answer: true
-      },
-      {
-        text: "プクリポの初期村はプクレット村である。",
-        answer: true
-      },
-      {
-        text: "メガルーラストーンは最初から使える。",
-        answer: false
-      },
-      {
-        text: "バージョン2の舞台はレンダーシアである。",
-        answer: true
-      },
-      {
-        text: "アンルシアはエルフである。",
-        answer: false
-      }
-      // ← ここにどんどんDQ10問題を追加していける
-    ];
+ <script>
+  // 難易度を取得
+  const params = new URLSearchParams(location.search);
+  const difficulty = params.get("difficulty");
 
-    let currentIndex = 0;
-    let score = 0;
-    let answered = false;
-
-    const questionEl = document.getElementById("question");
-    const resultEl = document.getElementById("result");
-    const scoreEl = document.getElementById("score");
-    const btnTrue = document.getElementById("btn-true");
-    const btnFalse = document.getElementById("btn-false");
-    const btnNext = document.getElementById("btn-next");
-
-    function showQuestion() {
-      const q = questions[currentIndex];
-      questionEl.textContent = `Q${currentIndex + 1}. ${q.text}`;
-      resultEl.textContent = "";
-      scoreEl.textContent = `スコア：${score} / ${questions.length}`;
-      btnNext.style.display = "none";
-      answered = false;
+  // JSONファイル読み込み
+  async function loadQuestions() {
+    const file = difficulty + "_quiz.json"; // easy_quiz.json など
+    try {
+      const response = await fetch(file);
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      alert("問題ファイルが読み込めませんでした: " + file);
+      return [];
     }
+  }
 
-    function checkAnswer(userAnswer) {
-      if (answered) return; // 二重押し防止
-      answered = true;
+  let questions = [];
+  let currentIndex = 0;
+  let score = 0;
+  let answered = false;
 
-      const q = questions[currentIndex];
-      const isCorrect = (userAnswer === q.answer);
+  const questionEl = document.getElementById("question");
+  const resultEl = document.getElementById("result");
+  const scoreEl = document.getElementById("score");
+  const btnTrue = document.getElementById("btn-true");
+  const btnFalse = document.getElementById("btn-false");
+  const btnNext = document.getElementById("btn-next");
 
-      if (isCorrect) {
-        resultEl.textContent = "正解！";
-        resultEl.style.color = "#4caf50";
-        score++;
-      } else {
-        resultEl.textContent = "不正解…";
-        resultEl.style.color = "#f44336";
-      }
+  // 多択用ボタン生成
+  function createMultiButtons(choices, correctIndex) {
+    const container = document.getElementById("quiz-container");
 
-      scoreEl.textContent = `スコア：${score} / ${questions.length}`;
+    // 既存の○×ボタンを消す
+    btnTrue.style.display = "none";
+    btnFalse.style.display = "none";
 
-      if (currentIndex < questions.length - 1) {
-        btnNext.style.display = "inline-block";
-      } else {
-        // 最終問題
-        btnNext.style.display = "none";
-        resultEl.textContent += " これで全問終了！";
-      }
-    }
+    // 既存の多択ボタンを削除
+    const oldButtons = document.querySelectorAll(".multi-btn");
+    oldButtons.forEach(btn => btn.remove());
 
-    btnTrue.addEventListener("click", () => checkAnswer(true));
-    btnFalse.addEventListener("click", () => checkAnswer(false));
-    btnNext.addEventListener("click", () => {
-      currentIndex++;
-      showQuestion();
+    // 新しい多択ボタンを生成
+    choices.forEach((choice, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = choice;
+      btn.className = "btn multi-btn";
+      btn.onclick = () => checkAnswer(index + 1);
+      container.insertBefore(btn, resultEl);
     });
+  }
 
-    // 最初の問題を表示
+  // ○×ボタンを表示
+  function showOXButtons() {
+    btnTrue.style.display = "inline-block";
+    btnFalse.style.display = "inline-block";
+
+    // 多択ボタン削除
+    const oldButtons = document.querySelectorAll(".multi-btn");
+    oldButtons.forEach(btn => btn.remove());
+  }
+
+  function showQuestion() {
+    const q = questions[currentIndex];
+
+    questionEl.textContent = `Q${currentIndex + 1}. ${q.question}`;
+    resultEl.textContent = "";
+    scoreEl.textContent = `スコア：${score} / ${questions.length}`;
+    btnNext.style.display = "none";
+    answered = false;
+
+    if (q.type === "ox") {
+      showOXButtons();
+    } else {
+      createMultiButtons(q.choices, q.answer);
+    }
+  }
+
+  function checkAnswer(userAnswer) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[currentIndex];
+    let isCorrect = false;
+
+    if (q.type === "ox") {
+      isCorrect = (userAnswer === q.answer);
+    } else {
+      isCorrect = (userAnswer === q.answer);
+    }
+
+    if (isCorrect) {
+      resultEl.textContent = "正解！";
+      resultEl.style.color = "#4caf50";
+      score++;
+    } else {
+      resultEl.textContent = "不正解…";
+      resultEl.style.color = "#f44336";
+    }
+
+    scoreEl.textContent = `スコア：${score} / ${questions.length}`;
+
+    if (currentIndex < questions.length - 1) {
+      btnNext.style.display = "inline-block";
+    } else {
+      resultEl.textContent += " これで全問終了！";
+    }
+  }
+
+  btnTrue.addEventListener("click", () => checkAnswer(true));
+  btnFalse.addEventListener("click", () => checkAnswer(false));
+  btnNext.addEventListener("click", () => {
+    currentIndex++;
     showQuestion();
-  </script>
+  });
+
+  // JSON読み込み後に開始
+  loadQuestions().then(data => {
+    questions = data;
+    showQuestion();
+  });
+</script>
 </body>
 </html>

@@ -1,0 +1,74 @@
+body {
+  font-family: "Meiryo", "Segoe UI", sans-serif;
+  background: #000; /* 黒背景 */
+  color: #fff;
+  text-align: center;
+  padding: 40px;
+}
+
+#quiz-container {
+  max-width: 650px;
+  margin: 0 auto;
+  background: #1a1a1a; /* DQ10風の黒ウィンドウ */
+  padding: 25px 35px;
+  border: 4px solid #c9a34e; /* 金色の縁取り */
+  border-radius: 0; /* DQ10は角が丸くない */
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+}
+
+h1 {
+  font-size: 1.6rem;
+  color: #ffe9a3; /* DQ10風の薄金色 */
+  margin-bottom: 20px;
+}
+
+#question {
+  font-size: 1.3rem;
+  margin: 20px 0;
+  color: #fff;
+}
+
+/* DQ10風ボタン */
+.btn {
+  display: inline-block;
+  margin: 10px;
+  padding: 12px 40px;
+  font-size: 1.2rem;
+  border: 3px solid #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.1s;
+  color: #fff;
+  text-shadow: 0 0 4px #000;
+}
+
+.btn-true {
+  background: linear-gradient(#3a8cff, #0055cc); /* 青ボタン */
+}
+
+.btn-false {
+  background: linear-gradient(#ff5a5a, #cc0000); /* 赤ボタン */
+}
+
+.btn-next {
+  background: linear-gradient(#ffd34e, #c9a34e); /* 金色ボタン */
+  color: #000;
+  border-color: #000;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
+
+#result {
+  margin-top: 15px;
+  font-size: 1.2rem;
+}
+
+#score {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ffe9a3;
+}

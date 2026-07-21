@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>�Ǘ��҃��O�C��</title>
+<style>
+  body {
+    font-family: "Meiryo", sans-serif;
+    background: #000;
+    color: #fff;
+    text-align: center;
+    padding-top: 60px;
+  }
+
+  #login-box {
+    width: 400px;
+    margin: 0 auto;
+    background: #1a1a1a;
+    border: 4px solid #c9a34e;
+    padding: 25px;
+    box-shadow: 0 0 25px rgba(255,215,0,0.3);
+  }
+
+  h1 {
+    color: #ffe9a3;
+    margin-bottom: 20px;
+  }
+
+  input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    background: #333;
+    color: #fff;
+    border: 2px solid #fff;
+  }
+
+  button {
+    padding: 12px 20px;
+    background: #0055cc;
+    border: 2px solid #ffe9a3;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  button:hover {
+    background: #003f99;
+  }
+</style>
+</head>
+<body>
+
+<div id="login-box">
+  <h1>ログイン</h1>
+
+  <input type="password" id="admin-pass" placeholder="管理者パスワード">
+  <button onclick="login()">ログイン</button>
+</div>
+
+<script>
+async function login() {
+  const pass = document.getElementById("admin-pass").value;
+
+  const res = await fetch("https://quiz-game-web.onrender.com/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: pass })
+  });
+
+  const data = await res.json();
+
+  if (data.ok) {
+    localStorage.setItem("admin", "1");
+    location.href = "select.html";
+  } else {
+    alert("パスワードが違います");
+  }
+}
+</script>
+
+</body>
+</html>
