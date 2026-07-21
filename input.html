@@ -26,7 +26,15 @@
     margin-bottom: 20px;
   }
 
-input, textarea, select {
+  label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: left;
+    padding-left: 5%;
+  }
+
+  input, textarea, select {
     width: 100%;
     max-width: 500px;
     padding: 10px;
@@ -35,7 +43,12 @@ input, textarea, select {
     background: #333;
     color: #fff;
     box-sizing: border-box;
-}
+    font-size: 0.95rem;
+  }
+
+  #question, #multi-question {
+    font-size: 0.95rem;
+  }
 
   button {
     padding: 12px 20px;
@@ -66,7 +79,7 @@ input, textarea, select {
   .error {
     background: #f44336;
     color: #fff;
-    }
+  }
 </style>
 </head>
 <body>
@@ -76,13 +89,13 @@ input, textarea, select {
 
   <p id="level"></p>
   
-   <label>問題タイプ</label>
+  <label>問題タイプ</label>
   <select id="type" onchange="switchType()">
     <option value="ox">○×クイズ</option>
     <option value="multi">多択クイズ</option>
   </select>
 
-   <div id="ox-form">
+  <div id="ox-form">
     <label>問題文</label>
     <textarea id="question" rows="4"></textarea>
 
@@ -92,7 +105,8 @@ input, textarea, select {
       <option value="false">×（false）</option>
     </select>
   </div>
-   <div id="multi-form" style="display:none;">
+
+  <div id="multi-form" style="display:none;">
     <label>問題文</label>
     <textarea id="multi-question" rows="4"></textarea>
 
@@ -161,11 +175,11 @@ if (localStorage.getItem("admin") !== "1") {
       const q = document.getElementById("question").value;
       const a = document.getElementById("ox-answer").value;
 
-     if (!q.trim()) {
+      if (!q.trim()) {
         showStatus("問題文を入力してください", false);
         return;
       }
-      
+
       quizData = {
         type: "ox",
         question: q,
@@ -175,10 +189,10 @@ if (localStorage.getItem("admin") !== "1") {
 
     } else {
       const q = document.getElementById("multi-question").value;
-	  const c = document.getElementById("choices").value.split("\n").map(s => s.trim()).filter(s => s);
+      const c = document.getElementById("choices").value.split("\n").map(s => s.trim()).filter(s => s);
       const a = Number(document.getElementById("answer").value);
 
-       if (!q.trim()) {
+      if (!q.trim()) {
         showStatus("問題文を入力してください", false);
         return;
       }
@@ -201,6 +215,7 @@ if (localStorage.getItem("admin") !== "1") {
         createdAt: Date.now()
       };
     }
+
     // サーバーに送信
     try {
       const response = await fetch("https://quiz-game-web.onrender.com/save-quiz", {
@@ -232,5 +247,3 @@ if (localStorage.getItem("admin") !== "1") {
 
 </body>
 </html>
-
-   
