@@ -26,6 +26,12 @@
     margin-bottom: 20px;
   }
 
+  h2 {
+    font-size: 1rem;
+    margin-top: 20px;
+    color: #c9a34e;
+  }
+
   .command {
     display: block;
     background: #1a1a1a;
@@ -58,22 +64,24 @@
     border-top: 2px solid #444;
   }
 
-  #admin-pass {
-    width: 70%;
-    padding: 10px;
-    margin-top: 10px;
-    background: #333;
+  .admin-command {
+    display: block;
+    background: #1a1a1a;
     color: #fff;
-    border: 2px solid #fff;
+    padding: 10px 20px;
+    margin: 10px auto;
+    width: 70%;
+    text-align: left;
+    border: 2px solid #c9a34e;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-shadow: 0 0 4px #000;
+    transition: 0.1s;
   }
 
-  #admin-btn {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background: #0055cc;
-    border: 2px solid #ffe9a3;
-    color: #fff;
-    cursor: pointer;
+  .admin-command:hover {
+    background: #333;
+    transform: scale(1.03);
   }
 </style>
 </head>
@@ -83,14 +91,15 @@
   <h1>難易度を選んでください</h1>
 
   <div class="command" onclick="selectDifficulty('easy')">▶ やさしい</div>
-  <div class="command" onclick="selectDifficulty('normal')">　ふつう</div>
-  <div class="command" onclick="selectDifficulty('hard')">　むずかしい</div>
-  <div class="command" onclick="startQuiz()">　はじめる</div>
+  <div class="command" onclick="selectDifficulty('normal')">▶ ふつう</div>
+  <div class="command" onclick="selectDifficulty('hard')">▶ むずかしい</div>
+  <div class="command selected" onclick="startQuiz()">▶ はじめる</div>
 
-  <!-- ★★★ ここに管理者専用エリアを追加する ★★★ -->
+  <!-- 管理者専用エリア -->
   <div id="admin-area">
     <h2>管理者メニュー</h2>
-   <div class="command" onclick="goAdmin()">　問題作成ページへ（管理者）</div>
+    <div class="admin-command" onclick="goCreateQuiz()">▶ 問題作成ページへ</div>
+    <div class="admin-command" onclick="goListQuiz()">▶ 問題一覧を見る</div>
   </div>
 </div>
 
@@ -100,53 +109,53 @@
 <script>
 // 管理者ログインチェック
 const isAdmin = localStorage.getItem("admin") === "1";
-  let selected = "easy";
+if (!isAdmin) {
+  document.getElementById("admin-area").style.display = "none";
+}
 
-  function playSE() {
-    const se = document.getElementById("se");
-    se.currentTime = 0;
-    se.play();
-  }
+let selected = "easy";
 
-  function selectDifficulty(level) {
-    playSE();
-    selected = level;
+function playSE() {
+  const se = document.getElementById("se");
+  se.currentTime = 0;
+  se.play();
+}
 
-    const commands = document.querySelectorAll(".command");
-    commands.forEach(cmd => cmd.classList.remove("selected"));
+function selectDifficulty(level) {
+  playSE();
+  selected = level;
 
-    if (level === "easy") commands[0].classList.add("selected");
-    if (level === "normal") commands[1].classList.add("selected");
-    if (level === "hard") commands[2].classList.add("selected");
-  }
+  const commands = document.querySelectorAll(".command");
+  commands.forEach(cmd => cmd.classList.remove("selected"));
 
-  function startQuiz() {
-    playSE();
-    location.href = "quiz.html?difficulty=" + selected;
-  }
+  if (level === "easy") commands[0].classList.add("selected");
+  if (level === "normal") commands[1].classList.add("selected");
+  if (level === "hard") commands[2].classList.add("selected");
+}
 
-  /* ★★★ 管理者遷移処理をここに追加 ★★★ */
-  function goAdmin() {
-    const pass = document.getElementById("admin-pass").value;
+function startQuiz() {
+  playSE();
+  location.href = "quiz.html?difficulty=" + selected;
+}
 
-    const ADMIN_PASSWORD = "dq10admin"; // ← 好きに変更してOK
-
-    if (pass === ADMIN_PASSWORD) {
-      playSE();
-      location.href = "input.html?difficulty=" + selected + "&admin=1";
-    } else {
-      alert("パスワードが違います");
-    }
-  }
-  function goAdmin() {
+function goCreateQuiz() {
   if (!isAdmin) {
-    alert("管理者としてログインしてください");
+    alert("管理者のみアクセスできます");
     location.href = "login.html";
     return;
   }
-
-  // 管理者なら input.html へ
+  playSE();
   location.href = "input.html?difficulty=" + selected;
+}
+
+function goListQuiz() {
+  if (!isAdmin) {
+    alert("管理者のみアクセスできます");
+    location.href = "login.html";
+    return;
+  }
+  playSE();
+  location.href = "admin-list.html";
 }
 </script>
 
