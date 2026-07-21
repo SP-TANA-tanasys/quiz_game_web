@@ -42,11 +42,29 @@
     color: #fff;
     cursor: pointer;
     font-size: 1.2rem;
+    margin: 5px;
   }
 
   button:hover {
     background: #003f99;
   }
+
+  #status {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    min-height: 20px;
+  }
+
+  .success {
+    background: #4caf50;
+    color: #fff;
+  }
+
+  .error {
+    background: #f44336;
+    color: #fff;
+    }
 </style>
 </head>
 <body>
@@ -84,7 +102,7 @@
   </div>
 
   <button onclick="saveQuiz()">保存する</button>
-</div>
+  <div id="status"></div>
 </div>
 
 <script>
@@ -120,8 +138,19 @@ if (localStorage.getItem("admin") !== "1") {
     }
   }
 
-  //saveQuiz()
-  function saveQuiz() {
+  // ステータスメッセージ表示
+  function showStatus(message, isSuccess) {
+    const statusEl = document.getElementById("status");
+    statusEl.textContent = message;
+    statusEl.className = isSuccess ? "success" : "error";
+    setTimeout(() => {
+      statusEl.textContent = "";
+      statusEl.className = "";
+    }, 3000);
+  }
+
+  // saveQuiz()
+  async function saveQuiz() {
     const type = document.getElementById("type").value;
 
     let quizData;
@@ -130,8 +159,12 @@ if (localStorage.getItem("admin") !== "1") {
       const q = document.getElementById("question").value;
       const a = document.getElementById("ox-answer").value;
 
+     if (!q.trim()) {
+        showStatus("問題文を入力してください", false);
+        return;
+      }
+      
       quizData = {
-        difficulty,
         type: "ox",
         question: q,
         answer: (a === "true"),
@@ -140,11 +173,25 @@ if (localStorage.getItem("admin") !== "1") {
 
     } else {
       const q = document.getElementById("multi-question").value;
-      const c = document.getElementById("choices").value.split("\n");
+	  const c = document.getElementById("choices").value.split("\n").map(s => s.trim()).filter(s => s);
       const a = Number(document.getElementById("answer").value);
 
+       if (!q.trim()) {
+        showStatus("問題文を入力してください", false);
+        return;
+      }
+
+      if (c.length === 0) {
+        showStatus("選択肢を入力してください", false);
+        return;
+      }
+
+      if (a < 1 || a > c.length) {
+        showStatus("正解の選択肢番号が不正です", false);
+        return;
+      }
+
       quizData = {
-        difficulty,
         type: "multi",
         question: q,
         choices: c,
@@ -152,26 +199,36 @@ if (localStorage.getItem("admin") !== "1") {
         createdAt: Date.now()
       };
     }
+    // サーバーに送信
+    try {
+      const response = await fetch("https://quiz-game-web.onrender.com/save-quiz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ difficulty, quizData })
+      });
 
-    const key = "quizzes_" + difficulty;
-    const saved = JSON.parse(localStorage.getItem(key) || "[]");
+      const data = await response.json();
 
-    saved.push(quizData);
-    localStorage.setItem(key, JSON.stringify(saved));
-
-    const blob = new Blob([JSON.stringify(saved, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const aTag = document.createElement("a");
-    aTag.href = url;
-    aTag.download = difficulty + "_quiz.json";
-    aTag.click();
-
-    URL.revokeObjectURL(url);
-
-    alert("JSONファイルを書き込みました！");
+      if (data.ok) {
+        showStatus(`✓ 保存完了！（全${data.total}問）`, true);
+        // フォームをクリア
+        if (type === "ox") {
+          document.getElementById("question").value = "";
+        } else {
+          document.getElementById("multi-question").value = "";
+          document.getElementById("choices").value = "";
+          document.getElementById("answer").value = "";
+        }
+      } else {
+        showStatus("保存に失敗しました: " + data.message, false);
+      }
+    } catch (e) {
+      showStatus("エラーが発生しました: " + e.message, false);
+    }
   }
 </script>
 
 </body>
 </html>
+
+   

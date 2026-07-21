@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<link rel="stylesheet" href="dq10.css">
+<link rel="stylesheet" href="DQ10.css">
   <meta charset="UTF-8">
   <title>DQ10 ○×クイズ</title>
   <style>
@@ -79,17 +79,16 @@
  <script>
   // 難易度を取得
   const params = new URLSearchParams(location.search);
-  const difficulty = params.get("difficulty");
+  const difficulty = params.get("difficulty") || "easy";
 
-  // JSONファイル読み込み
+  // サーバーからクイズデータを読み込む
   async function loadQuestions() {
-    const file = difficulty + "_quiz.json"; // easy_quiz.json など
     try {
-      const response = await fetch(file);
+      const response = await fetch(`https://quiz-game-web.onrender.com/get-quiz?difficulty=${difficulty}`);
       const data = await response.json();
       return data;
-    } catch (e) {
-      alert("問題ファイルが読み込めませんでした: " + file);
+      alert("問題ファイルが読み込めませんでした");
+      console.error(e);
       return [];
     }
   }
@@ -139,6 +138,15 @@
   }
 
   function showQuestion() {
+      if (questions.length === 0) {
+      questionEl.textContent = "問題がまだ作成されていません";
+      resultEl.textContent = "";
+      scoreEl.textContent = "";
+      btnTrue.style.display = "none";
+      btnFalse.style.display = "none";
+      btnNext.style.display = "none";
+      return;
+    }
     const q = questions[currentIndex];
 
     questionEl.textContent = `Q${currentIndex + 1}. ${q.question}`;
@@ -192,7 +200,7 @@
     showQuestion();
   });
 
-  // JSON読み込み後に開始
+  // サーバーから問題を読み込んで開始
   loadQuestions().then(data => {
     questions = data;
     showQuestion();
