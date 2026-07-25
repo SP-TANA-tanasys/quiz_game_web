@@ -55,6 +55,20 @@ function saveQuizzes(difficulty, quizzes) {
   }
 }
 
+async function saveQuizToDB(difficulty, quiz) {
+  await pool.query(
+    `INSERT INTO questions
+      (difficulty, question, answer, explanation)
+     VALUES ($1, $2, $3, $4)`,
+    [
+      difficulty,
+      quiz.question,
+      quiz.answer,
+      quiz.explanation
+    ]
+  );
+}
+
 // ログイン処理
 app.post("/login", (req, res) => {
   const { password } = req.body;
@@ -67,7 +81,7 @@ app.post("/login", (req, res) => {
 });
 
 // クイズを取得
-app.get("/get-quiz", (req, res) => {
+app.get("/get-quiz", async (req, res) => {
   const difficulty = req.query.difficulty || "easy";
   const quizzes = loadQuizzes(difficulty);
   res.json(quizzes);
@@ -81,34 +95,22 @@ app.post("/save-quiz", (req, res) => {
     return res.status(400).json({ ok: false, message: "難易度と問題データが必要です" });
   }
 
-  try {
-    const quizzes = loadQuizzes(difficulty);
-    quizzes.push(quizData);
-    saveQuizzes(difficulty, quizzes);
-    res.json({ ok: true, message: "問題を保存しました", total: quizzes.length });
-  } catch (e) {
-    res.status(500).json({ ok: false, message: "保存に失敗しました" });
-  }
-});
+ try {
+  await saveQuizToDB(difficulty, quizData);
 
-(async () => {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS questions (
-        id SERIAL PRIMARY KEY,
-        difficulty VARCHAR(20) NOT NULL,
-        question TEXT NOT NULL,
-        answer BOOLEAN NOT NULL,
-        explanation TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
+  res.json({
+    ok: true,
+    message: "問題を保存しました"
+  });
 
-    console.log("questionsテーブル作成完了");
-  } catch (err) {
-    console.error(err);
-  }
-})();
+} catch (e) {
+  console.error(e);
+  res.status(500).json({
+    ok: false,
+    message: "保存失敗"
+  });
+}
+
 
 app.listen(10000, () => {
   console.log("Server running on port 10000");
