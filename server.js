@@ -89,27 +89,38 @@ app.get("/get-quiz", async (req, res) => {
 
 // クイズを保存
 app.post("/save-quiz", async (req, res) => {
+  console.log("===== /save-quiz =====");
+  console.log(req.body);
+
   const { difficulty, quizData } = req.body;
 
   if (!difficulty || !quizData) {
-    return res.status(400).json({ ok: false, message: "難易度と問題データが必要です" });
+    console.log("データ不足");
+    return res.status(400).json({
+      ok: false,
+      message: "難易度と問題データが必要です"
+    });
   }
 
- try {
-  await saveQuizToDB(difficulty, quizData);
+  try {
+    console.log("DBへ保存開始");
+    await saveQuizToDB(difficulty, quizData);
+    console.log("DBへ保存成功");
 
-  res.json({
-    ok: true,
-    message: "問題を保存しました"
-  });
+    res.json({
+      ok: true,
+      message: "問題を保存しました"
+    });
 
-} catch (e) {
-  console.error(e);
-  res.status(500).json({
-    ok: false,
-    message: "保存失敗"
-  });
-}
+  } catch (e) {
+    console.error("DB保存エラー");
+    console.error(e);
+
+    res.status(500).json({
+      ok: false,
+      message: "保存失敗"
+    });
+  }
 });
 
 

@@ -225,7 +225,7 @@ if (localStorage.getItem("admin") !== "1") {
 
     // サーバーに送信
     try {
-      const response = await fetch("https://quiz-game-web.onrender.com/save-quiz", {
+const response = await fetch("/save-quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ difficulty, quizData })
@@ -234,7 +234,7 @@ if (localStorage.getItem("admin") !== "1") {
       const data = await response.json();
 
       if (data.ok) {
-        showStatus(`✓ 保存完了！（全${data.total}問）`, true);
+		showStatus("✓ 保存しました！", true);
         // フォームをクリア
         if (type === "ox") {
           document.getElementById("question").value = "";
