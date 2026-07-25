@@ -93,11 +93,19 @@ app.post("/save-quiz", (req, res) => {
 
 (async () => {
   try {
-    const result = await pool.query("SELECT NOW()");
-    console.log("PostgreSQLê⁄ë±ê¨å˜");
-    console.log(result.rows[0]);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS questions (
+        id SERIAL PRIMARY KEY,
+        difficulty VARCHAR(20) NOT NULL,
+        question TEXT NOT NULL,
+        answer BOOLEAN NOT NULL,
+        explanation TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log("questionsÉeÅ[ÉuÉãçÏê¨äÆóπ");
   } catch (err) {
-    console.error("PostgreSQLê⁄ë±é∏îs");
     console.error(err);
   }
 })();
