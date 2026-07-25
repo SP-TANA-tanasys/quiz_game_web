@@ -112,15 +112,16 @@ app.post("/save-quiz", async (req, res) => {
       message: "問題を保存しました"
     });
 
-  } catch (e) {
-    console.error("DB保存エラー");
-    console.error(e);
+  } 
+ catch (e) {
+  console.error("=== DB保存エラー ===");
+  console.error(e);
 
-    res.status(500).json({
-      ok: false,
-      message: "保存失敗"
-    });
-  }
+  res.status(500).json({
+    ok: false,
+    message: e.message
+  });
+}
 });
 
 
