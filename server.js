@@ -88,7 +88,7 @@ app.get("/get-quiz", async (req, res) => {
 });
 
 // ƒNƒCƒY‚ð•Û‘¶
-app.post("/save-quiz", (req, res) => {
+app.post("/save-quiz", async (req, res) => {
   const { difficulty, quizData } = req.body;
 
   if (!difficulty || !quizData) {
@@ -110,6 +110,7 @@ app.post("/save-quiz", (req, res) => {
     message: "•Û‘¶Ž¸”s"
   });
 }
+});
 
 
 app.listen(10000, () => {
