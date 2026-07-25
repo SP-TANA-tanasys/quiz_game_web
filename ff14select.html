@@ -3,25 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <title>難易度選択</title>
-
-<link rel="stylesheet" href="css/DQ10.css">
+<link rel="stylesheet" href="css/ff14.css">
 </head>
 <body>
 
-<div id="menu">
-  <h1>難易度を選んでください</h1>
+<div class="logo">
 
-  <div class="command" onclick="selectDifficulty('easy')">▶ やさしい</div>
-  <div class="command" onclick="selectDifficulty('normal')">▶ ふつう</div>
-  <div class="command" onclick="selectDifficulty('hard')">▶ むずかしい</div>
+    <img src="images/ff14-logo-crystal.png"
+         class="logo-crystal">
 
-  <!-- 管理者専用エリア -->
-  <div id="admin-area">
-    <h2>管理者メニュー</h2>
-    <div class="admin-command" onclick="goCreateQuiz()">▶ 問題作成ページへ</div>
-    <div class="admin-command" onclick="goListQuiz()">▶ 問題一覧を見る</div>
-  </div>
+    <div class="title">
+        EORZEA
+    </div>
+
+    <div class="subtitle">
+        Knowledge Trial
+    </div>
+
 </div>
+<div class="difficulty">
+<div class="command" onclick="selectDifficulty('easy')">
+◆ Adventurer
+</div>
+
+<div class="command" onclick="selectDifficulty('normal')">
+◆ Veteran
+</div>
+
+<div class="command" onclick="selectDifficulty('hard')">
+◆ Savage
+</div>
+
+<div class="command selected" onclick="startQuiz()">
+▶ Commence
+</div>
+</div>
+  <!-- 管理者専用エリア -->
+ <div id="admin-area">
+        <h2>Administrator</h2>
+
+        <div class="admin-command" onclick="goCreateQuiz()">
+            Create Question
+        </div>
+
+        <div class="admin-command" onclick="goListQuiz()">
+            Question List
+        </div>
+ </div>
+
 
 <!-- 効果音 -->
 <audio id="se" src="https://soundeffect-lab.info/sound/button/mp3/button01.mp3"></audio>
@@ -45,14 +74,17 @@ function selectDifficulty(level) {
   playSE();
   selected = level;
 
-  location.href = `quiz.html?difficulty=${level}`;
-
   const commands = document.querySelectorAll(".command");
   commands.forEach(cmd => cmd.classList.remove("selected"));
 
   if (level === "easy") commands[0].classList.add("selected");
   if (level === "normal") commands[1].classList.add("selected");
   if (level === "hard") commands[2].classList.add("selected");
+}
+
+function startQuiz() {
+  playSE();
+  location.href = "quiz.html?difficulty=" + selected;
 }
 
 function goCreateQuiz() {

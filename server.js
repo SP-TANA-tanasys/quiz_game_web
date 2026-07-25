@@ -2,7 +2,16 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
+const { Pool } = require("pg");
 const app = express();
+
+// posgreÚ‘±
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 app.use(cors());
 app.use(express.json());
@@ -81,6 +90,17 @@ app.post("/save-quiz", (req, res) => {
     res.status(500).json({ ok: false, message: "•Û‘¶‚ÉŽ¸”s‚µ‚Ü‚µ‚½" });
   }
 });
+
+(async () => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    console.log("PostgreSQLÚ‘±¬Œ÷");
+    console.log(result.rows[0]);
+  } catch (err) {
+    console.error("PostgreSQLÚ‘±Ž¸”s");
+    console.error(err);
+  }
+})();
 
 app.listen(10000, () => {
   console.log("Server running on port 10000");

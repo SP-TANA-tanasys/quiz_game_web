@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<link rel="stylesheet" href="DQ10.css">
+<link rel="stylesheet" href="css/DQ10.css">
   <meta charset="UTF-8">
   <title>DQ10 ○×クイズ</title>
   <style>
-    body {
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background: #20232a;
-      color: #fff;
-      text-align: center;
-      padding: 40px;
-    }
+body {
+  color: #fff;
+  text-align: center;
+  padding: 40px;
+}
     #quiz-container {
       max-width: 600px;
       margin: 0 auto;
@@ -67,7 +65,11 @@
 </head>
 <body>
   <div id="quiz-container">
-    <h1>DQ10 ○×クイズ</h1>
+<h1>DQ10 ○×クイズ</h1>
+
+<div id="difficulty" class="difficulty"></div>
+
+<div id="question"></div>
     <div id="question"></div>
     <button class="btn btn-true" id="btn-true">○</button>
     <button class="btn btn-false" id="btn-false">×</button>
