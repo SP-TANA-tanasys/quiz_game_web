@@ -58,15 +58,22 @@ function saveQuizzes(difficulty, quizzes) {
 async function saveQuizToDB(difficulty, quiz) {
   await pool.query(
     `INSERT INTO questions
-      (difficulty, question, answer, explanation, type, choices)
+      (
+        difficulty,
+        question,
+        answer,
+        explanation,
+        type,
+        choices
+      )
      VALUES ($1, $2, $3, $4, $5, $6)`,
     [
       difficulty,
       quiz.question,
       quiz.answer,
-      quiz.explanation,
+      quiz.explanation || null,
       quiz.type,
-      quiz.choices
+      quiz.choices || null
     ]
   );
 }

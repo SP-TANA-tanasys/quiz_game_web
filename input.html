@@ -96,10 +96,10 @@ body {
   <p id="level"></p>
   
   <label>問題タイプ</label>
-  <select id="type" onchange="switchType()">
-    <option value="ox">○×クイズ</option>
-    <option value="multi">多択クイズ</option>
-  </select>
+	<select id="type" onchange="switchType()">
+	  <option value="boolean">○×クイズ</option>
+	  <option value="choice">多択クイズ</option>
+	</select>
 
   <div id="ox-form">
     <label>問題文</label>
@@ -150,16 +150,16 @@ if (localStorage.getItem("admin") !== "1") {
 
   //フォーム切り替え処理
   function switchType() {
-    const type = document.getElementById("type").value;
+  const type = document.getElementById("type").value;
 
-    if (type === "ox") {
-      document.getElementById("ox-form").style.display = "block";
-      document.getElementById("multi-form").style.display = "none";
-    } else {
-      document.getElementById("ox-form").style.display = "none";
-      document.getElementById("multi-form").style.display = "block";
-    }
+  if (type === "boolean") {
+    document.getElementById("ox-form").style.display = "block";
+    document.getElementById("multi-form").style.display = "none";
+  } else {
+    document.getElementById("ox-form").style.display = "none";
+    document.getElementById("multi-form").style.display = "block";
   }
+}
 
   // ステータスメッセージ表示
   function showStatus(message, isSuccess) {
@@ -187,12 +187,13 @@ if (localStorage.getItem("admin") !== "1") {
         return;
       }
 
-      quizData = {
-        type: "ox",
-        question: q,
-        answer: (a === "true"),
-        createdAt: Date.now()
-      };
+		quizData = {
+		  type: "boolean",
+		  question: q,
+		  answer: (a === "true"),
+		  choices: null,
+		  createdAt: Date.now()
+		};
 
     } else {
       const q = document.getElementById("multi-question").value;
@@ -214,14 +215,18 @@ if (localStorage.getItem("admin") !== "1") {
         return;
       }
 
-      quizData = {
-        type: "multi",
-        question: q,
-        choices: c,
-        answer: a,
-        createdAt: Date.now()
-      };
-    }
+		const choiceData = c.map((text, index) => ({
+		  text: text,
+		  correct: (index + 1 === a)
+		}));
+
+		quizData = {
+		  type: "choice",
+		  question: q,
+		  answer: null,
+		  choices: choiceData,
+		  createdAt: Date.now()
+		};
 
     // サーバーに送信
     try {
