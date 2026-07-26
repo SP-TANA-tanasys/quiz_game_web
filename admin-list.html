@@ -162,7 +162,7 @@ async function loadAllQuizzes() {
 
   try {
     for (const difficulty of difficulties) {
-      const response = await fetch(`https://quiz-game-web.onrender.com/get-quiz?difficulty=${difficulty}`);
+      const response = await fetch(`https://quiz-game-web-1.onrender.com/get-quiz?difficulty=${difficulty}`);
       const quizzes = await response.json();
 
       const section = document.createElement("div");
