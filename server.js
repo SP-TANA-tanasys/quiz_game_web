@@ -35,7 +35,7 @@ async function saveQuizToDB(difficulty, quiz) {
       quiz.answer,
       quiz.explanation || null,
       quiz.type,
-      quiz.choices || null
+      quiz.choices ? JSON.stringify(quiz.choices) : null
     ]
   );
 }
