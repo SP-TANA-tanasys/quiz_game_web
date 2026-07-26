@@ -158,11 +158,11 @@ body {
     btnNext.style.display = "none";
     answered = false;
 
-    if (q.type === "ox") {
-      showOXButtons();
-    } else {
-      createMultiButtons(q.choices, q.answer);
-    }
+		if (q.type === "multi") {
+		  createMultiButtons(q.choices, q.answer);
+		} else {
+		  showOXButtons();
+		}
   }
 
   function checkAnswer(userAnswer) {
