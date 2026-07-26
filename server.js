@@ -54,9 +54,10 @@ app.post("/login", (req, res) => {
 // クイズを取得
 app.get("/get-quiz", async (req, res) => {
   const difficulty = req.query.difficulty || "easy";
+  const type = req.query.type;
 
   try {
-    const quizzes = await loadQuizzesFromDB(difficulty);
+    const quizzes = await loadQuizzesFromDB(difficulty, type);
     res.json(quizzes);
   } catch (e) {
     console.error(e);
@@ -102,14 +103,21 @@ app.post("/save-quiz", async (req, res) => {
 });
 
 //クイズ読み込み
-async function loadQuizzesFromDB(difficulty) {
-  const result = await pool.query(
-    `SELECT * FROM questions
-     WHERE difficulty = $1
-     ORDER BY id`,
-    [difficulty]
-  );
+async function loadQuizzesFromDB(difficulty, type) {
+  let sql = `
+    SELECT *
+    FROM questions
+    WHERE difficulty = $1
+  `;
+  let params = [difficulty];
 
+  if (type) {
+    sql += ` AND type = $2`;
+    params.push(type);
+  }
+  sql += ` ORDER BY id`;
+
+  const result = await pool.query(sql, params);
   return result.rows;
 }
 
@@ -174,7 +182,7 @@ app.put("/admin/questions/:id", async (req, res) => {
         q.answer ?? null,
         q.explanation ?? null,
         q.type,
-        q.choices ?? null,
+        q.choices ? JSON.stringify(q.choices) : null,
         req.params.id
       ]
     );
