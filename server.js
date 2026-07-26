@@ -83,8 +83,14 @@ app.post("/login", (req, res) => {
 // クイズを取得
 app.get("/get-quiz", async (req, res) => {
   const difficulty = req.query.difficulty || "easy";
-  const quizzes = loadQuizzes(difficulty);
-  res.json(quizzes);
+
+  try {
+    const quizzes = await loadQuizzesFromDB(difficulty);
+    res.json(quizzes);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json([]);
+  }
 });
 
 // クイズを保存
@@ -128,3 +134,15 @@ app.post("/save-quiz", async (req, res) => {
 app.listen(10000, () => {
   console.log("Server running on port 10000");
 });
+
+//クイズ読み込み
+async function loadQuizzesFromDB(difficulty) {
+  const result = await pool.query(
+    `SELECT * FROM questions
+     WHERE difficulty = $1
+     ORDER BY id`,
+    [difficulty]
+  );
+
+  return result.rows;
+}
