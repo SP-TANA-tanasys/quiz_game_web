@@ -86,7 +86,7 @@ body {
   // サーバーからクイズデータを読み込む
   async function loadQuestions() {
     try {
-      const response = await fetch(`https://quiz-game-web-1.onrender.com/get-quiz?difficulty=${difficulty}`);
+      const response = await fetch(`https://quiz-game-web-1.onrender.com/get-quiz?difficulty=${difficulty}&type=boolean`);
       const data = await response.json();
       return data;
       } catch (e) {
