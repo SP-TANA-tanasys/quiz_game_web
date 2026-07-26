@@ -1,7 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
 const { Pool } = require("pg");
 const app = express();
 
@@ -18,42 +16,6 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
-// クイズデータの保存ディレクトリ
-const quizDir = path.join(__dirname, "quizzes");
-if (!fs.existsSync(quizDir)) {
-  fs.mkdirSync(quizDir);
-}
-
-// 難易度ごとのJSONファイルパス
-function getQuizPath(difficulty) {
-  return path.join(quizDir, `${difficulty}_quiz.json`);
-}
-
-// JSONファイルを読み込む
-function loadQuizzes(difficulty) {
-  const filePath = getQuizPath(difficulty);
-  try {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, "utf-8");
-      return JSON.parse(data);
-    }
-  } catch (e) {
-    console.error(`Error reading ${filePath}:`, e);
-  }
-  return [];
-}
-
-// JSONファイルに保存
-function saveQuizzes(difficulty, quizzes) {
-  const filePath = getQuizPath(difficulty);
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(quizzes, null, 2), "utf-8");
-  } catch (e) {
-    console.error(`Error writing ${filePath}:`, e);
-    throw e;
-  }
-}
 
 async function saveQuizToDB(difficulty, quiz) {
   await pool.query(
@@ -139,11 +101,6 @@ app.post("/save-quiz", async (req, res) => {
 }
 });
 
-
-app.listen(10000, () => {
-  console.log("Server running on port 10000");
-});
-
 //クイズ読み込み
 async function loadQuizzesFromDB(difficulty) {
   const result = await pool.query(
@@ -205,25 +162,26 @@ app.put("/admin/questions/:id", async (req, res) => {
   try {
 
     await pool.query(
-
       `UPDATE questions
        SET question=$1,
            answer=$2,
-           explanation=$3
-       WHERE id=$4`,
-
+           explanation=$3,
+           type=$4,
+           choices=$5
+       WHERE id=$6`,
       [
         q.question,
-        q.answer,
-        q.explanation,
+        q.answer ?? null,
+        q.explanation ?? null,
+        q.type,
+        q.choices ?? null,
         req.params.id
       ]
-
     );
 
     res.json({ ok:true });
 
-  } catch(e){
+  } catch(e) {
 
     console.error(e);
 
@@ -233,4 +191,8 @@ app.put("/admin/questions/:id", async (req, res) => {
 
   }
 
+});
+
+app.listen(10000, () => {
+  console.log("Server running on port 10000");
 });
