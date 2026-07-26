@@ -58,13 +58,15 @@ function saveQuizzes(difficulty, quizzes) {
 async function saveQuizToDB(difficulty, quiz) {
   await pool.query(
     `INSERT INTO questions
-      (difficulty, question, answer, explanation)
-     VALUES ($1, $2, $3, $4)`,
+      (difficulty, question, answer, explanation, type, choices)
+     VALUES ($1, $2, $3, $4, $5, $6)`,
     [
       difficulty,
       quiz.question,
       quiz.answer,
-      quiz.explanation
+      quiz.explanation,
+      quiz.type,
+      quiz.choices
     ]
   );
 }
@@ -146,3 +148,82 @@ async function loadQuizzesFromDB(difficulty) {
 
   return result.rows;
 }
+
+//–â‘èˆê——API
+app.get("/admin/questions", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM questions
+      ORDER BY id DESC
+    `);
+
+    res.json(result.rows);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json([]);
+  }
+});
+
+//íœAPI
+app.delete("/admin/questions/:id", async (req, res) => {
+
+  try {
+
+    await pool.query(
+      "DELETE FROM questions WHERE id=$1",
+      [req.params.id]
+    );
+
+    res.json({ ok: true });
+
+  } catch (e) {
+
+    console.error(e);
+
+    res.status(500).json({
+      ok:false
+    });
+
+  }
+
+});
+
+//•ÒWAPI
+app.put("/admin/questions/:id", async (req, res) => {
+
+  const q = req.body;
+
+  try {
+
+    await pool.query(
+
+      `UPDATE questions
+       SET question=$1,
+           answer=$2,
+           explanation=$3
+       WHERE id=$4`,
+
+      [
+        q.question,
+        q.answer,
+        q.explanation,
+        req.params.id
+      ]
+
+    );
+
+    res.json({ ok:true });
+
+  } catch(e){
+
+    console.error(e);
+
+    res.status(500).json({
+      ok:false
+    });
+
+  }
+
+});
