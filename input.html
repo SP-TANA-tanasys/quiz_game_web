@@ -174,11 +174,13 @@ if (localStorage.getItem("admin") !== "1") {
 
   // saveQuiz()
   async function saveQuiz() {
+    console.log("type =", document.getElementById("type").value);
+  console.log("question =", document.getElementById("question").value);
     const type = document.getElementById("type").value;
 
     let quizData;
 
-    if (type === "ox") {
+	if (type === "boolean") {
       const q = document.getElementById("question").value;
       const a = document.getElementById("ox-answer").value;
 
@@ -243,7 +245,7 @@ const response = await fetch("https://quiz-game-web-1.onrender.com/save-quiz", {
       if (data.ok) {
 		showStatus("✓ 保存しました！", true);
         // フォームをクリア
-        if (type === "ox") {
+		if (type === "boolean") {
           document.getElementById("question").value = "";
         } else {
           document.getElementById("multi-question").value = "";
